@@ -50,6 +50,7 @@ function axi_master_scoreboard::write(input axi_master_sequence_item req);
 if(s_axi_awburst == 0) begin
   if(bresp == OKAY) begin
     write_success[awaddr] = wdata[awlen];
+	  
   end
   else if(bresp == SLVERR) begin
 	write_fail[awaddr] = wdata[awlen];
