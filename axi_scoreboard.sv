@@ -31,7 +31,7 @@ extern virtual function void write(input axi_master_sequence_item req);
 
 function axi4_master_scoreboard::new(string name = " axi4_master_scoreboard ", uvm_component parent = null);
 super.new(name, parent);
-// CREATING ANALYSIS IMPORT 
+// CREATING ANALYSIS IMPORT
 axi_seq_item_imp = new("axi_seq_item_imp",this);
 endfunction: new
 
@@ -47,66 +47,53 @@ int burst_size;
 
 function axi_master_scoreboard::write(input axi_master_sequence_item req);
 //WRITE
-if(s_axi_awburst == 0) begin
-  if(bresp == OKAY) begin
-    write_success[awaddr] = wdata[awlen];
-	  
+if(req.s_axi_awburst == 0) begin
+  if(req.s_axi_bresp == OKAY) begin
+    write_success[req.s_axi_awaddr] = req.s_axi_wdata[req.s_axi_awlen];
   end
-  else if(bresp == SLVERR) begin
-	write_fail[awaddr] = wdata[awlen];
+  else if(req.s_axi_bresp == SLVERR) begin
+        write_fail[req.s_axi_awaddr] = req.s_axi_wdata[req.s_axi_awlen];
    end
 end
-else if(s_axi_awburst == 1) begin
-  temp_write.push(awaddr);
-  for(int i = 1; i <= awlen; i++) begin
-    burst_size = 2**awsize;
-    temp_write.push(awaddr + (temp_write.size())*burst_size);
+else if(req.s_axi_awburst == 1) begin
+  temp_write.push(req.s_axi_awaddr);
+  for(int i = 1; i <= req.s_axi_awlen; i++) begin
+    burst_size = 2**req.s_axi_awsize;
+    temp_write.push(req.s_axi_awaddr + (temp_write.size())*burst_size);
    end
-   if(bresp == OKAY) begin
-	for(int i = 0; i <= awlen; i++) begin
-	  write_success[temp_write.pop_front()] = wdata[i];
-	end
-   else if(bresp == SLVERR) begin
-	for(int i = 0; i <= awlen; i++) begin
-	  write_fail[temp_write.pop_front()] = wdata[i];
-	end
+   if(req.s_axi_bresp == OKAY) begin
+        for(int i = 0; i <= req.s_axi_awlen; i++) begin
+          write_success[temp_write.pop_front()] = req.s_axi_wdata[i];
+        end
+   else if(req.s_axi_bresp == SLVERR) begin
+        for(int i = 0; i <= req.s_axi_awlen; i++) begin
+          write_fail[temp_write.pop_front()] = req.s_axi_wdata[i];
+        end
    end
 end
 
 //READ
-if(s_axi_arburst == 0) begin
-  if(rresp == OKAY) begin
-    read_success[araddr] = rddata[arlen];
+if(req.s_axi_arburst == 0) begin
+  if(req.s_axi_rresp == OKAY) begin
+    read_success[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
   end
-  else if(rresp == SLVERR) begin
-	read_fail[araddr] = rddata[arlen];
+  else if(s_axi_rresp == SLVERR) begin
+        read_fail[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
    end
 end
 else if(s_axi_arburst == 1) begin
-  temp_read.push(araddr);
-  for(int i = 1; i <= arlen; i++) begin
-    burst_size = 2**arsize;
-    temp_read.push(araddr + (temp_read.size())*burst_size);
+  temp_read.push(s_axi_araddr);
+  for(int i = 1; i <= s_axi_arlen; i++) begin
+    burst_size = 2**s_axi_arsize;
+    temp_read.push(s_axi_araddr + (temp_read.size())*burst_size);
    end
-   if(rresp == OKAY) begin
-	for(int i = 0; i <= arlen; i++) begin
-	  read_success[temp_read.pop_front()] = rddata[i];
-	end
-   else if(rresp == SLVERR) begin
-	read_fail[temp_read.pop_front()] = rddata[i];
+   if(s_axi_rresp == OKAY) begin
+        for(int i = 0; i <= s_axi_arlen; i++) begin
+          read_success[temp_read.pop_front()] = s_axi_rddata[i];
+        end
+   else if(s_axi_rresp == SLVERR) begin
+        read_fail[temp_read.pop_front()] = s_axi_rddata[i];
    end
 end
 endfunction
-
-
-    
-  
-
-
-
-
-
-
-
-
 
