@@ -12,7 +12,7 @@ parameter OKAY=0;
 parameter SLVERR=1;
 
 // AXI MASTER SCOREBOARD IS THE USER DEFINED CLASS WHICH EXTENDS FROM UVM SCOREBOARD (PREDEFINED SCOREBOARD CLASS)
-axi4_master_scoreboard extends uvm_scoreboard;
+class axi4_master_scoreboard extends uvm_scoreboard;
 
 // FACTORY REGISTRATION
 // REGISTERING THE USER DEFINED CLASS IN THE LUT
@@ -55,6 +55,7 @@ if(req.s_axi_awburst == 0) begin
         write_fail[req.s_axi_awaddr] = req.s_axi_wdata[req.s_axi_awlen];
    end
 end
+  
 else if(req.s_axi_awburst == 1) begin
   temp_write.push(req.s_axi_awaddr);
   for(int i = 1; i <= req.s_axi_awlen; i++) begin
@@ -71,6 +72,7 @@ else if(req.s_axi_awburst == 1) begin
         end
    end
 end
+
 
 //READ
 if(req.s_axi_arburst == 0) begin
@@ -95,5 +97,8 @@ else if(s_axi_arburst == 1) begin
         read_fail[temp_read.pop_front()] = s_axi_rddata[i];
    end
 end
+  comparision();
 endfunction
+
+  endclass : axi4_master_scoreboard
 
