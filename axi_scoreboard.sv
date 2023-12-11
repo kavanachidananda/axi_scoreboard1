@@ -85,9 +85,7 @@ if(req.s_axi_arburst == 0) begin
         read_success[i] == write_success[i];
         success++;
         //display;
-        else
-          
-        
+        read_success.delete(i);
       end
     end
   end
