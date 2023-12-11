@@ -44,6 +44,7 @@ bit[127:0] read_fail[int];
 int temp_write[$];
 int temp_read[$];
 int burst_size;
+  int success;
 
 function axi_master_scoreboard::write(input axi_master_sequence_item req);
 //WRITE
@@ -99,6 +100,16 @@ else if(s_axi_arburst == 1) begin
 end
   comparision();
 endfunction
-
+  function void comparision();
+    foreach(write_success[i]) begin
+      if(read_success.exits(i))begin
+        read_success[i] == write_success[i];
+        success++;
+        //display;
+      end
+    end
+  endfunction
+      
+    
   endclass : axi4_master_scoreboard
 
