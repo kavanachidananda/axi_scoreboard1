@@ -80,18 +80,12 @@ end
 if(req.s_axi_arburst == 0) begin
   if(req.s_axi_rresp == OKAY) begin
     read_success[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
-    foreach(write_success[i]) begin
-      if(read_success.exits(i))begin
-        read_success[i] == write_success[i];
-        success++;
-        //display;
-        read_success.delete(i);
-      end
+  
     end
   end
- /* else if(s_axi_rresp == SLVERR) begin
+ else if(s_axi_rresp == SLVERR) begin
         read_fail[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
-   end */
+   end 
 end
 else if(s_axi_arburst == 1) begin
   temp_read.push(s_axi_araddr);
@@ -103,21 +97,47 @@ else if(s_axi_arburst == 1) begin
         for(int i = 0; i <= s_axi_arlen; i++) begin
           read_success[temp_read.pop_front()] = s_axi_rddata[i];
         end
- /*  else if(s_axi_rresp == SLVERR) begin
+  else if(s_axi_rresp == SLVERR) begin
         read_fail[temp_read.pop_front()] = s_axi_rddata[i];
-   end */
+   end 
 end
   
 endfunction
  
     
-/*    foreach (write_failure[i]) begin
+  foreach (write_failure[i]) begin
       if(read_sucess.exits(i)) begin
         read_sucess[i] != write_failure[i];
         failure++;
         //display;
        
-      
+ function void check_1();
+   foreach(write_success[i]) begin
+      if(read_success.exits(i))begin
+        if(read_success[i] == write_success[i]) begin
+        success++;
+        //display;
+        end
+        else
+          fail++;
+        //display;
+        read_success.delete(i);
+     end
+ endfunction
+
+     function void check_2();
+         foreach(write_success[i]) begin
+           if(read_fail.exits(i))begin
+             if(read_fail[i] != write_success[i]) begin
+        success++;
+        //display;
+        end
+        else
+          fail++;
+        //display;
+        read_fail.delete(i);
+
+      end
     
   endclass : axi4_master_scoreboard
 
