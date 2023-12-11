@@ -44,7 +44,8 @@ bit[127:0] read_fail[int];
 int temp_write[$];
 int temp_read[$];
 int burst_size;
-  int success;
+int success;
+int failure;
 
 function axi_master_scoreboard::write(input axi_master_sequence_item req);
 //WRITE
@@ -79,10 +80,20 @@ end
 if(req.s_axi_arburst == 0) begin
   if(req.s_axi_rresp == OKAY) begin
     read_success[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
+    foreach(write_success[i]) begin
+      if(read_success.exits(i))begin
+        read_success[i] == write_success[i];
+        success++;
+        //display;
+        else
+          
+        
+      end
+    end
   end
-  else if(s_axi_rresp == SLVERR) begin
+ /* else if(s_axi_rresp == SLVERR) begin
         read_fail[s_axi_araddr] = s_axi_rddata[s_axi_arlen];
-   end
+   end */
 end
 else if(s_axi_arburst == 1) begin
   temp_read.push(s_axi_araddr);
@@ -94,21 +105,20 @@ else if(s_axi_arburst == 1) begin
         for(int i = 0; i <= s_axi_arlen; i++) begin
           read_success[temp_read.pop_front()] = s_axi_rddata[i];
         end
-   else if(s_axi_rresp == SLVERR) begin
+ /*  else if(s_axi_rresp == SLVERR) begin
         read_fail[temp_read.pop_front()] = s_axi_rddata[i];
-   end
+   end */
 end
-  comparision();
+  
 endfunction
-  function void comparision();
-    foreach(write_success[i]) begin
-      if(read_success.exits(i))begin
-        read_success[i] == write_success[i];
-        success++;
+ 
+    
+/*    foreach (write_failure[i]) begin
+      if(read_sucess.exits(i)) begin
+        read_sucess[i] != write_failure[i];
+        failure++;
         //display;
-      end
-    end
-  endfunction
+       
       
     
   endclass : axi4_master_scoreboard
