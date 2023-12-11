@@ -123,9 +123,10 @@ endfunction
         //display;
         read_success.delete(i);
      end
+   end
  endfunction
 
-     function void check_2();
+function void check_2();
          foreach(write_success[i]) begin
            if(read_fail.exits(i))begin
              if(read_fail[i] != write_success[i]) begin
@@ -136,8 +137,22 @@ endfunction
           fail++;
         //display;
         read_fail.delete(i);
-
-      end
-    
+  end
+  end    
+endfunction
+ function void check_3();
+         foreach(write_success[i]) begin
+           if(read_fail.exits(i))begin
+             if(read_fail[i] != write_success[i]) begin
+        success++;
+        //display;
+        end
+        else
+          fail++;
+        //display;
+        read_fail.delete(i);
+  end
+  end    
+endfunction
   endclass : axi4_master_scoreboard
 
